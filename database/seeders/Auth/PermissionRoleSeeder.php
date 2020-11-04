@@ -78,6 +78,39 @@ class PermissionRoleSeeder extends Seeder
             ]),
         ]);
 
+        // Users category
+        $users2 = Permission::create([
+            'type' => User::TYPE_USER,
+            'name' => 'user.access.payments',
+            'description' => 'All User Permissions',
+        ]);
+
+        $users2->children()->saveMany([
+            new Permission([
+                'type' => User::TYPE_USER,
+                'name' => 'user.access.products.list',
+                'description' => 'View Products',
+            ]),
+            new Permission([
+                'type' => User::TYPE_USER,
+                'name' => 'user.access.products.deactivate',
+                'description' => 'Deactivate Products',
+                'sort' => 2,
+            ]),
+            new Permission([
+                'type' => User::TYPE_USER,
+                'name' => 'user.access.products.reactivate',
+                'description' => 'Reactivate Products',
+                'sort' => 3,
+            ]),
+            new Permission([
+                'type' => User::TYPE_USER,
+                'name' => 'user.access.payments.view',
+                'description' => 'View Payments',
+                'sort' => 3,
+            ])
+        ]);
+
         // Assign Permissions to other Roles
         //
 

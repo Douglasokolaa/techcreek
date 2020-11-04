@@ -120,7 +120,7 @@ return [
     | Whether or not to show the breadcrumb trail on the frontend
     | Note: Turning this off does not unregister the breadcrumbs in the routes file, it just hides the navbar
     */
-    'frontend_breadcrumbs' => true,
+    'frontend_breadcrumbs' => false,
 
     /*
     |--------------------------------------------------------------------------
@@ -143,7 +143,7 @@ return [
          * Whether or not to show the language picker, or just default to the default
          * locale specified in the app config file
          */
-        'status' => true,
+        'status' => false,
 
         /*
          * Available languages
