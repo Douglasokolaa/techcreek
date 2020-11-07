@@ -85,6 +85,7 @@ class PermissionRoleSeeder extends Seeder
             'description' => 'All User Permissions',
         ]);
 
+        /*
         $users2->children()->saveMany([
             new Permission([
                 'type' => User::TYPE_USER,
@@ -110,6 +111,7 @@ class PermissionRoleSeeder extends Seeder
                 'sort' => 3,
             ])
         ]);
+        */
 
         // Assign Permissions to other Roles
         //

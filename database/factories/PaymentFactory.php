@@ -34,7 +34,7 @@ class PaymentFactory extends Factory
             'address' => $this->faker->address,
             'duration' => $this->faker->numberBetween(1,30),
             'start_date' => $this->faker->date(),
-            'end_date' => $this->faker->date('Y-m-d', '1 year'),
+            'end_date' => $this->faker->date('Y-m-d', '+ 1 year'),
             'amount' => $this->faker->randomDigit,
             'reference' =>  $client->formattedId($alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', $size = 6),
             'product_id' => $this->faker->randomElement([1,2]),

@@ -11,11 +11,11 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::where('is_active', true)->get();
-        return view('backend.products', compact('products'));
+        return view('frontend.products', compact('products'));
     }
 
     public function update(Request $request, Product $product)
     {
-        dd($product, $request->all());
+        return view('backend.products-edit', compact('product'));
     }
 }

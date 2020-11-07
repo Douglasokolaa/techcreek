@@ -1,6 +1,6 @@
 @extends('frontend.layouts.app')
 
-@section('title', __('Dashboard'))
+@section('title', __('Products'))
 
 @section('content')
     <div class="container py-4">
@@ -8,11 +8,11 @@
             <div class="col-md-12">
                 <x-frontend.card>
                     <x-slot name="header">
-                        @lang('Welcome :Name, Enter Payment Reference to search', ['name' => $logged_in_user->name])
+                        @lang('Products')
                     </x-slot>
 
                     <x-slot name="body">
-                        <livewire:search />
+                        <livewire:frontend.product-table />
                     </x-slot>
                 </x-frontend.card>
             </div><!--col-md-10-->

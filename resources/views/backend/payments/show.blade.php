@@ -10,6 +10,11 @@
 
         <x-slot name="body">
             <div class="row">
+                @if (\Carbon\Carbon::parse($payment->end_date)->isPast())
+                <div class="col-md-12">
+                    <p class="font-weight-bold text-center  bg-danger alert alert-danger text-white">{{ __('This Pyament is Expired') }}</p>
+                </div>
+                @endif
                 <div class="col-md-6">
                     <table class="table table-striped table-bordered">
                         <thead class="thead-default">
@@ -20,7 +25,7 @@
                         <tbody>
                             <tr>
                                 <td class="font-weight-bold text-info">Status</td>
-                                <td>{{ $payment->status() }}</td>
+                                <td>{{ view('backend.includes.payment.status',['status' => $payment->status]) }}</td>
                             </tr>
                             <tr>
                                 <td class="font-weight-bold text-info">Space</td>
@@ -73,14 +78,14 @@
                                 <td class="font-weight-bold text-info">phone_number</td>
                                 <td> {{ $payment->phone_number }}</td>
                             </tr>
-                            <tr>
+                            {{--  <tr>
                                 <td class="font-weight-bold text-info">FullName</td>
                                 <td> {{ $payment->name }}</td>
                             </tr>
                             <tr>
                                 <td class="font-weight-bold text-info">FullName</td>
                                 <td> {{ $payment->name }}</td>
-                            </tr>
+                            </tr>  --}}
                         </tbody>
                     </table>
                 </div>

@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Frontend;
 
 // use App\Domains\Auth\Models\User;
 use App\Domains\Custom\Models\Payment;
+use Auth;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\TableComponent;
@@ -87,12 +88,16 @@ class PaymentTable extends TableComponent
                 ->sortable(),
             Column::make(__('Expires'), 'end_date')
                 ->sortable()
-                ->format(function (Payment $pay) {
-                    return Carbon::parse($pay->end_date)->calendar();
+                ->format(function (Payment $model) {
+                    return Carbon::parse($model->end_date)->calendar();
                 }),
             Column::make(__('Actions'))
                 ->format(function (Payment $model) {
-                    return $this->linkRoute('admin.payments.show','view',['payment' => $model->id],['class' => 'btn btn-primary']);
+                    if (Auth::user()->isAdmin()) {
+                        return $this->linkRoute('admin.payments.show','view',['payment' => $model->id],['class' => 'btn btn-primary']);
+                    } else {
+                        return $this->linkRoute('frontend.custom.payments.show','view',['payment' => $model->id],['class' => 'btn btn-primary']);
+                    }
                 }),
         ];
     }

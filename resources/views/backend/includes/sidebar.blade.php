@@ -7,7 +7,7 @@
             <use xlink:href="{{ asset('img/brand/logo.png#signet') }}"></use>
         </svg> --}}
         <img class="img-fluid c-sidebar-brand-full" src="{{ asset('img/brand/logo.png#full') }}" style="width: 56px" />
-        <img class="img-fluid c-sidebar-brand-minimized" src="{{ asset('img/brand/logo.png#full') }}"
+        <img class="img-fluid c-sidebar-brand-minimized" src="{{ asset('img/brand/logo.png#signet') }}"
             style="width: 45px" />
     </div>
     <!--c-sidebar-brand-->
