@@ -15,7 +15,6 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        dd(Payment::search('')->paginate(10));
         return view('backend.dashboard');
     }
 }

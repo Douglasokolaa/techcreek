@@ -19,11 +19,19 @@ Route::group(['as' => 'custom.', 'middleware' => ['auth', 'password.expires', co
                 ->push(__('Payments'), route('frontend.custom.payments'));
         });
 
+    Route::get('payment/{payment}', [PaymentController::class, 'show'])
+        ->middleware('is_user')
+        ->name('payments.show')
+        ->breadcrumbs(function (Trail $trail) {
+            $trail->parent('frontend.index')
+                ->push(__('Payments'), route('frontend.custom.payments'));
+        });
+
     Route::get('products', [ProductController::class, 'index'])
-    ->middleware('is_user')
-    ->name('products')
-    ->breadcrumbs(function (Trail $trail) {
-        $trail->parent('frontend.index')
-            ->push(__('Products'), route('frontend.custom.products'));
-    });
+        ->middleware('is_user')
+        ->name('products')
+        ->breadcrumbs(function (Trail $trail) {
+            $trail->parent('frontend.index')
+                ->push(__('Products'), route('frontend.custom.products'));
+        });
 });

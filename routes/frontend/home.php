@@ -20,9 +20,8 @@ Route::get('/', function () {
         if (Auth::user()->hasRole('Administrator')) {
             return redirect()->route('admin.dashboard');
         }
-        return redirect()->route('frontend.user.dashboard');
     }
-    return redirect()->route('frontend.custom.payments');
+    return redirect()->route('frontend.user.dashboard');
 })->name('index');
 
 Route::get('terms', [TermsController::class, 'index'])

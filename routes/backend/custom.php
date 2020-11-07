@@ -14,6 +14,14 @@ Route::get('/admin/payments', [PaymentController::class, 'indexAdmin'])
             ->push(__('Payments'), route('admin.payments'));
     });
 
+Route::get('/admin/payments/{payment}', [PaymentController::class, 'viewAdmin'])
+->name('payments.show')
+->breadcrumbs(function (Trail $trail) {
+    $trail->parent('admin.dashboard')
+        ->push(__('Payments'), route('admin.payments'));
+});
+
+
 Route::get('/admin/product', [ProductController::class, 'index'])
     ->name('product')
     ->breadcrumbs(function (Trail $trail) {

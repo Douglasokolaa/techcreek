@@ -36,14 +36,6 @@ class PaymentTable extends TableComponent
     ];
 
     /**
-     * @param  string  $status
-     */
-    public function mount($status = 'paid'): void
-    {
-        $this->status = $status;
-    }
-
-    /**
      * @return Builder
      */
     public function query(): Builder
@@ -61,6 +53,7 @@ class PaymentTable extends TableComponent
         if ($this->status === 'pending') {
             return $query->where('status', Payment::FAILED);
         }
+        return $query;
     }
 
     /**
@@ -77,28 +70,19 @@ class PaymentTable extends TableComponent
             Column::make(__('Status'), 'status')
                 ->sortable()
                 ->format(function (Payment $model) {
-                    return $this->view('backend.includes.payment.status', ['status' => $model->status]);
+                    return view('backend.includes.payment.status', ['status' => $model->status]);
                 }),
             Column::make(__('Name'), 'name')
                 ->searchable()
                 ->sortable(),
             Column::make(__('Phone Number'), 'phone_number')
                 ->searchable()
-                ->sortable()
-                ->format(function (Payment $payment) {
-                    return $this->link('tel:+' . $payment->phone_number);
-                }),
-            Column::make(__('Package'), 'product_id')
+                ->sortable(),
+            Column::make(__('Package'), 'product.name')
                 ->searchable()
-                ->sortable()
-                ->format(function (Payment $payment) {
-                    return $this->link('tel:+' . $payment->phone_number);
-                }),
+                ->sortable(),
             Column::make(__('Duration'), 'type')
-                ->sortable()
-                ->format(function (Payment $pay) {
-                    return $pay->type == 'monthly' ? $pay->duration . ' months' : ($pay->type == 'daily' ?  $pay->duration . ' days' : $pay->duration . ' years');
-                }),
+                ->sortable(),
             Column::make(__('Start'), 'start_date')
                 ->sortable(),
             Column::make(__('Expires'), 'end_date')
@@ -107,9 +91,8 @@ class PaymentTable extends TableComponent
                     return Carbon::parse($pay->end_date)->calendar();
                 }),
             Column::make(__('Actions'))
-                // ->hide
                 ->format(function (Payment $model) {
-                    return '';// view('backend.auth.user.includes.actions', ['user' => $model]);
+                    return $this->linkRoute('admin.payments.show','view',['payment' => $model->id],['class' => 'btn btn-primary']);
                 }),
         ];
     }
