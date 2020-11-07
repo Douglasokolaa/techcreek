@@ -35,18 +35,19 @@
                     @endif
                 @else
 
-                    @if ($logged_in_user->can('user.access.payments.view'))
+                @if ($logged_in_user->isUser())
                         <li class="nav-item {{ activeClass(Route::is('frontend.custom.payments')) }}">
                             <x-utils.link href="{{ route('frontend.custom.payments') }}" class="nav-link" :text="__('Payments')" />
                         </li>
                     @endif
-{{--  
-                    @if ($logged_in_user->can('user.access.products.list') || $logged_in_user->can('user.access.products.deactivate') || $logged_in_user->can('user.access.products.reactivate'))
-                        <li class="nav-item {{ activeClass(Route::is('frontend.custom.*')) }}">
-                            <x-utils.link href="{{ route('frontend.custom.payments') }}" class="nav-link" :text="__('Products')" />
+
+                    @if ($logged_in_user->isUser())
+                    {{-- @if ($logged_in_user->can('user.access.products.list') || $logged_in_user->can('user.access.products.deactivate') || $logged_in_user->can('user.access.products.reactivate')) --}}
+                        <li class="nav-item {{ activeClass(Route::is('frontend.custom.products.*')) }}">
+                            <x-utils.link href="{{ route('frontend.custom.products') }}" class="nav-link" :text="__('Products')" />
                         </li>
                     @endif
-  --}}
+
                     <li class="nav-item dropdown">
                         <x-utils.link href="#" id="navbarDropdown" class="nav-link dropdown-toggle" role="button"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>

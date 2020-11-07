@@ -12,6 +12,7 @@
     @stack('before-styles')
     <link href="{{ mix('css/backend.css') }}" rel="stylesheet">
     <livewire:styles />
+    @livewireStyles
     @stack('after-styles')
 </head>
 <body class="c-app">
@@ -42,6 +43,7 @@
     <script src="{{ mix('js/vendor.js') }}"></script>
     <script src="{{ mix('js/backend.js') }}"></script>
     <livewire:scripts />
+    @livewireScripts
     @stack('after-scripts')
 </body>
 </html>

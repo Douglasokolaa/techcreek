@@ -15,7 +15,13 @@ use Tabuna\Breadcrumbs\Trail;
 //         $trail->push(__('Home'), route('frontend.index'));
 //     });
 
-Route::get('/', function() {
+Route::get('/', function () {
+    if (Auth::check()) {
+        if (Auth::user()->hasRole('Administrator')) {
+            return redirect()->route('admin.dashboard');
+        }
+        return redirect()->route('frontend.user.dashboard');
+    }
     return redirect()->route('frontend.custom.payments');
 })->name('index');
 

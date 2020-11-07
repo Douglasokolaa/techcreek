@@ -20,15 +20,15 @@
         </li>
 
         @if ($logged_in_user->hasAllAccess() || $logged_in_user->can('user.access.payments.view'))
-            <li class="c-sidebar-nav-item {{ activeClass(Route::is('admin.auth.user.*')) }}">
+            <li class="c-sidebar-nav-item {{ activeClass(Route::is('admin.payments')) }}">
                 <x-utils.link href="{{ route('admin.payments') }}" icon="c-sidebar-nav-icon cil-money"
                     class="c-sidebar-nav-link" :text="__('Payments')" />
             </li>
         @endif
 
         @if ($logged_in_user->hasAllAccess() || $logged_in_user->can('user.access.products.list') || $logged_in_user->can('user.access.products.deactivate') || $logged_in_user->can('user.access.products.reactivate'))
-            <li class="c-sidebar-nav-item {{ activeClass(Route::is('admin.auth.user.*')) }}">
-                <x-utils.link href="{{ route('admin.dashboard') }}" icon="c-sidebar-nav-icon cil-list"
+            <li class="c-sidebar-nav-item {{ activeClass(Route::is('admin.product.*')) }}">
+                <x-utils.link href="{{ route('admin.product') }}" icon="c-sidebar-nav-icon cil-list"
                     class="c-sidebar-nav-link" :text="__('Products')" />
             </li>
         @endif

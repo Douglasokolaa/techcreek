@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use DB;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Paystack;
 
 class PaymentController extends Controller
 {
