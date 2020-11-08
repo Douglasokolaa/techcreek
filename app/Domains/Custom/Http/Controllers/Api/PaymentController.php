@@ -8,10 +8,10 @@ use App\Domains\Custom\Models\Product;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PaymentResource;
 use DB;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Paystack;
+use Hidehalo\Nanoid\Client;
 
 class PaymentController extends Controller
 {
@@ -55,6 +55,7 @@ class PaymentController extends Controller
         }
 
         DB::beginTransaction();
+        $client = new Client();
         $product = Product::where('slug', $request->plan)->first();
         $payment = $product->payments()->create([
             'name'          => $request->post('name'),
@@ -68,7 +69,7 @@ class PaymentController extends Controller
             'end_date'      => $endDate,
             'amount'        => $request->post('amount'),
             'status'        => 1,
-            'reference'     => Str::upper('RSICT-' . Str::random(6))
+            'reference'     => 'RS' . $client->formattedId($alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', $size = 6),
         ]);
 
         try {
@@ -81,22 +82,17 @@ class PaymentController extends Controller
                 // "callback_url" => route('paystack.return'),
                 "currency" => "NGN",
             ]);
-            // $paymentUrl = $pay->url;
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json([
-                'status'  => 'fail',
+                'status'  => false,
                 'message' => 'something Went Wrong',
                 'data'   => App::environment('local') ? $e->getMessage() : '',
             ], '400');
         }
 
-        return response()->json([
-            'status'  => 'ok',
-            'message' => 'payent Details',
-            'url'   => $pay,
-        ], '200');
+        return response()->json($pay, '200');
     }
 
     /**
@@ -110,16 +106,16 @@ class PaymentController extends Controller
         $payment = Payment::where('reference', $reference)->first();
         if (!$payment) {
             return response()->json([
-                'status'  => 'fail',
+                'status'  => false,
                 'message' => 'Invalid Payment reference',
                 'data'   => [],
             ], '403');
         }
 
         return response()->json([
-            'status'  => 'ok',
-            'message' => 'payent Details',
-            'data'   => PaymentResource::make($payment),
+            'status'  => false,
+            'message' => 'Invalid Payment reference',
+            'data'   => PaymentResource::make($payment)
         ], '200');
     }
 
