@@ -16,7 +16,7 @@ class Product extends Component
 
     protected $rules = [
         'name'      => 'required',
-        'price_daily'   => 'sometimes',
+        'price_daily'   => 'sometimes|numeric',
         'price_monthly' => 'required|numeric',
         'price_yearly'  => 'required|gte:price_monthly|numeric',
     ];

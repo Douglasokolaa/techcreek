@@ -6,9 +6,11 @@ use App;
 use App\Domains\Custom\Models\Payment;
 use App\Domains\Custom\Models\Product;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PaymentResource;
 use DB;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Paystack;
 
 class PaymentController extends Controller
@@ -20,7 +22,7 @@ class PaymentController extends Controller
      */
     public function index()
     {
-        return response()->json(Product::all());
+        return response()->json(Product::all()->makeHidden(['id', 'is_active']));
     }
 
     /**
@@ -31,72 +33,70 @@ class PaymentController extends Controller
      */
     public function store(Request $request)
     {
-       $request->validate([
-        'name'          => 'required|string|min:3',
-        'email'         => 'required|email',
-        'gender'        => 'required|in_array:male,female',
-        'plan'          => 'required|in_array:open_cafe,coworking',
-        'type'          => 'required|in_array:daily,monthly,yearly',
-        'address'       => 'required',
-        'phone_number'  => 'required|string',
-        'duration'      => 'required|integer',
-        'start_date'    => 'required|date',
-        'amount'        => 'required|numeric',
-    ]);
-
-    if ($request->post('duration') == 'yearly') {
-        $endDate = now()->addYear($request->post('duration'));
-    } elseif ($request->post('duration') == 'monthly') {
-        $endDate = now()->addMonth($request->post('duration'));
-    } else {
-        $endDate = now()->addDays($request->post('duration'));
-    }
-
-    DB::beginTransaction();
-    $payment = Payment::create([
-        'name'          => $request->post('name'),
-        'email'         => $request->post('email'),
-        'gender'        => $request->post('gender'),
-        'plan'          => $request->post('plan'),
-        'type'          => $request->post('type'),
-        'address'       => $request->post('address'),
-        'phone_number'  => $request->post('phone_number'),
-        'duration'      => $request->post('duration'),
-        'start_date'    => $request->post('start_date'),
-        'end_date'      => $endDate,
-        'amount'        => $request->post('amount'),
-        'is_paid'       => false,
-        'reference'     => Str::upper('RSICT-' . Str::random(6))
-    ]);
-
-    $pay = new Paystack;
-    try {
-        $paymentData = $pay->getAuthorizationResponse([
-            "amount" => floatval($payment->amount) * 100,
-            "reference" => $payment->reference,
-            "email" => $payment->email,
-            "first_name" => $payment->name,
-            // "last_name" => $payment->last_name,
-            "callback_url" => route('paystack.return'),
-            "currency" => "NGN",
+        $this->validate($request, [
+            'name'          => 'required|string|min:3',
+            'email'         => 'required|email',
+            'gender'        => 'required|in:male,female',
+            'plan'          => ['required', Rule::exists('products', 'slug')],
+            'type'          => 'required|in:daily,monthly,yearly',
+            'address'       => 'required',
+            'phone_number'  => 'required|string',
+            'duration'      => 'required|integer',
+            'start_date'    => 'required|date',
+            'amount'        => 'required|numeric',
         ]);
-        DB::commit();
-    } catch (\Exception $e) {
-        DB::rollback();
+
+        if ($request->post('duration') == 'yearly') {
+            $endDate = now()->addYear($request->post('duration'));
+        } elseif ($request->post('duration') == 'monthly') {
+            $endDate = now()->addMonth($request->post('duration'));
+        } else {
+            $endDate = now()->addDays($request->post('duration'));
+        }
+
+        DB::beginTransaction();
+        $product = Product::where('slug', $request->plan)->first();
+        $payment = $product->payments()->create([
+            'name'          => $request->post('name'),
+            'email'         => $request->post('email'),
+            'gender'        => $request->post('gender'),
+            'type'          => $request->post('type'),
+            'address'       => $request->post('address'),
+            'phone_number'  => $request->post('phone_number'),
+            'duration'      => $request->post('duration'),
+            'start_date'    => $request->post('start_date'),
+            'end_date'      => $endDate,
+            'amount'        => $request->post('amount'),
+            'status'        => 1,
+            'reference'     => Str::upper('RSICT-' . Str::random(6))
+        ]);
+
+        try {
+            $pay = Paystack::getAuthorizationResponse([
+                "amount" => floatval($payment->amount) * 100,
+                "reference" => $payment->reference,
+                "email" => $payment->email,
+                "first_name" => $payment->name,
+                // "last_name" => $payment->last_name,
+                // "callback_url" => route('paystack.return'),
+                "currency" => "NGN",
+            ]);
+            // $paymentUrl = $pay->url;
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'status'  => 'fail',
+                'message' => 'something Went Wrong',
+                'data'   => App::environment('local') ? $e->getMessage() : '',
+            ], '400');
+        }
+
         return response()->json([
-            'status'  => 'dail',
-            'message' => 'something Went Wrong',
-            'data'   => App::environment('local') ? $e->getMessage() : '',
-        ], '400');
-    }
-
-    $paymentUrl = $pay->url;
-
-    return response()->json([
-        'status'  => 'ok',
-        'message' => 'payent Details',
-        'url'   => $paymentUrl,
-    ], '200');
+            'status'  => 'ok',
+            'message' => 'payent Details',
+            'url'   => $pay,
+        ], '200');
     }
 
     /**
@@ -105,9 +105,9 @@ class PaymentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($reference)
     {
-        $payment = Payment::where('reference', $id)->get();
+        $payment = Payment::where('reference', $reference)->first();
         if (!$payment) {
             return response()->json([
                 'status'  => 'fail',
@@ -119,7 +119,7 @@ class PaymentController extends Controller
         return response()->json([
             'status'  => 'ok',
             'message' => 'payent Details',
-            'data'   => $payment->toArray(),
+            'data'   => PaymentResource::make($payment),
         ], '200');
     }
 
@@ -146,4 +146,3 @@ class PaymentController extends Controller
         //
     }
 }
-

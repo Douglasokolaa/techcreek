@@ -1,5 +1,6 @@
 <?php
 
+use App\Domains\Custom\Http\Controllers\Api\PaymentController;
 use Illuminate\Http\Request;
 
 /*
@@ -16,3 +17,11 @@ use Illuminate\Http\Request;
 //Route::middleware('auth:api')->get('/user', function (Request $request) {
 //    return $request->user();
 //});
+
+//CUSTOM ROUTES (NEW FILE NOT NEEDED)
+
+Route:: group(['prefix' => 'v1'], function () {
+    Route::get('/products', [PaymentController::class, 'index']);
+    Route::post('/payment', [PaymentController::class, 'store']);
+    Route::get('payment/{reference}', [PaymentController::class, 'show']);
+});

@@ -13,9 +13,29 @@ class Payment extends Model
     public const PAID = 2;
     public const FAILED = 3;
 
+    protected $fillable = [
+        'name',
+        'email',
+        'gender',
+        'plan',
+        'type',
+        'address',
+        'phone_number',
+        'duration',
+        'start_date',
+        'end_date',
+        'amount',
+        'status',
+        'reference',
+    ];
     public function product()
     {
         return $this->belongsTo(Product::class)->withDefault();
+    }
+
+    public function amount()
+    {
+        return 'NGN' . $this->amount;
     }
 
     public function status(): string
@@ -51,7 +71,7 @@ class Payment extends Model
                 break;
             default:
                 $period = $this->type;
-            break;
+                break;
         }
         return $this->duration . ' ' . $period;
     }
